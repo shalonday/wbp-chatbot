@@ -44,7 +44,6 @@ export interface RAGChatbotProps {
  */
 export function RAGChatbot({
   apiClient,
-  systemPrompt = 'You are a helpful assistant for the Web Brain Project Search Page. Assist users in searching for URLs or skills, and assist them in adding new material if the material they are looking for does not exist yet.',
   customInstructions = '',
   onMaterialRequestSubmit,
   startNodeId = 'E', // Default to "E" (entry node)
@@ -85,17 +84,6 @@ export function RAGChatbot({
       setMessages([welcomeMessage]);
     }
   }, []);
-
-  /**
-   * Compose full system prompt with custom instructions
-   */
-  const getFullSystemPrompt = (): string => {
-    const base = systemPrompt;
-    if (customPrompt) {
-      return `${base}\n\nAdditional Instructions:\n${customPrompt}`;
-    }
-    return base;
-  };
 
   /**
    * Handle user message submission
