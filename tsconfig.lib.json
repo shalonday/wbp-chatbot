@@ -6,7 +6,9 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "verbatimModuleSyntax": false,
+    "allowImportingTsExtensions": false
   },
-  "include": ["src/index.ts"]
+  "include": ["src/**/*"]
 }

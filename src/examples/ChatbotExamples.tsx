@@ -77,12 +77,6 @@ function EmbeddedDemo() {
 function RouterIntegrationExample() {
   const apiClient = createPerkAPIClient();
 
-  // In your actual app, you'd use useNavigate from react-router-dom
-  const handleLinkClick = (path: string) => {
-    console.log('Navigate to:', path);
-    // navigate(path);
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
