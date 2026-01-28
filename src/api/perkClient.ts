@@ -1,7 +1,11 @@
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
-import type { SearchResult, MaterialRequest, DiscordEmbedPayload } from '../types';
-
+import type {
+  SearchResult,
+  MaterialRequest,
+  DiscordEmbedPayload,
+} from '../types';
+import { getPerkApiUrl } from '../constants/api';
 /**
  * API client for Perk API integration
  */
@@ -113,9 +117,6 @@ export class PerkAPIClient {
  * Create and return a PerkAPIClient instance
  */
 export function createPerkAPIClient(baseURL?: string): PerkAPIClient {
-  const url =
-    baseURL ||
-    import.meta.env.VITE_PERK_API_BASE_URL ||
-    'http://localhost:3000';
+  const url = baseURL || getPerkApiUrl();
   return new PerkAPIClient(url);
 }

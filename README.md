@@ -1,73 +1,182 @@
-# React + TypeScript + Vite
+# WBP Chatbot Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A plug-and-play RAG chatbot React component for the Web Brain Project, powered by Neo4j and Material UI.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Semantic search** over Neo4j graph (skills and learning materials)
+- **Clickable links** to visualization (`/paths/:startId/:endId`)
+- **Discord integration** for material requests with rich embeds
+- **Custom instructions** that append to system prompt
+- **Fully tested** with Vitest, React Testing Library, and MSW
+- **Styled with Material UI** using sensible defaults
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Installation
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Copy `.env.example` to `.env.local`:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env.local
 ```
+
+Update with your Perk API base URL and Discord webhook (if needed).
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Testing
+
+```bash
+npm test           # Run tests
+npm run test:ui    # Visual test dashboard
+npm run test:coverage  # Coverage report
+```
+
+### Linting & Formatting
+
+```bash
+npm run lint       # Check and fix lint issues
+npm run format     # Format code with Prettier
+```
+
+## Project Structure
+
+```
+src/
+├── api/               # Perk API client
+├── components/        # React components (chatbot, message, etc.)
+├── hooks/            # Custom hooks (useChatbot)
+├── mocks/            # Mock data and MSW server
+├── types/            # TypeScript types
+├── utils/            # Utilities (session ID, path links, etc.)
+└── test/             # Test configuration
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { RAGChatbot } from './components/RAGChatbot';
+import { createPerkAPIClient } from './api/perkClient';
+
+function SearchPage() {
+  const apiClient = createPerkAPIClient();
+
+  return (
+    <RAGChatbot
+      apiClient={apiClient}
+      systemPrompt="You are a helpful learning assistant"
+      customInstructions="Focus on beginner-friendly resources"
+    />
+  );
+}
+```
+
+### With Custom Event Handlers
+
+```tsx
+<RAGChatbot
+  apiClient={apiClient}
+  onMaterialRequestSubmit={async (request) => {
+    console.log('Material request:', request);
+    // Custom handling
+  }}
+/>
+```
+
+## Architecture
+
+### Data Flow
+
+1. User inputs a query
+2. Component calls `apiClient.searchBySimilarity(query)`
+3. Perk API backend searches Neo4j embeddings
+4. Results are displayed with clickable path links
+5. For material requests, results are formatted as Discord embeds and submitted
+
+### Neo4j Schema
+
+```
+Nodes:
+- Skill (id, name, embedding)
+- URL (id, name, embedding)
+
+Relationships:
+- (Skill)-[:IS_PREREQUISITE_TO]->(URL)
+- (URL)-[:TEACHES]->(Skill)
+```
+
+## API Endpoints (Perk API)
+
+The component expects these endpoints to be available:
+
+- `POST /chatbot/search` - Similarity search over embeddings
+  - Request: `{ query: string, limit?: number }`
+  - Response: `SearchResult[]`
+
+- `POST /chatbot/material-request` - Submit a material request
+  - Request: `{ embed: DiscordEmbedPayload, request: MaterialRequest }`
+  - Response: `{ success: boolean }`
+
+## Custom Instructions
+
+Pass custom instructions as a string. They will be appended to the default system prompt:
+
+```tsx
+<RAGChatbot
+  apiClient={apiClient}
+  customInstructions={`
+    - Always recommend beginner-friendly resources first
+    - Include time estimates for each material
+  `}
+/>
+```
+
+## Testing
+
+The project includes:
+
+- **MSW (Mock Service Worker)** for API mocking
+- **React Testing Library** for component testing
+- **Vitest** as the test runner
+- Mock data provider for offline development
+
+Example test:
+
+```tsx
+import { render, screen } from '@testing-library/react';
+import { RAGChatbot } from './RAGChatbot';
+import { createPerkAPIClient } from '../api/perkClient';
+
+it('should render chatbot', () => {
+  const apiClient = createPerkAPIClient();
+  render(<RAGChatbot apiClient={apiClient} />);
+  expect(screen.getByRole('textbox')).toBeInTheDocument();
+});
+```
+
+## Todo / Future Work
+
+- [ ] Implement full RAGChatbot component with UI
+- [ ] Add material request confirmation flow
+- [ ] User identification/consent UI
+- [ ] Embedding generation pipeline documentation
+- [ ] More comprehensive tests
+- [ ] Dark mode support
+- [ ] Message persistence (localStorage)
+
+## License
+
+MIT

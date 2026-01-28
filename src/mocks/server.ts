@@ -1,8 +1,8 @@
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
+import { getPerkApiUrl } from '../constants/api';
 
-const API_BASE =
-  import.meta.env.VITE_PERK_API_BASE_URL || 'http://localhost:3000';
+const API_BASE = getPerkApiUrl();
 
 export const server = setupServer(
   http.post(`${API_BASE}/chatbot/search`, () => {
