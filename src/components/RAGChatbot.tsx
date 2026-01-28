@@ -27,7 +27,7 @@ import type { ChatMessage, MaterialRequest, SearchResult } from '../types';
 import { generateSessionId } from '../utils/common';
 import { buildPathLink, buildResultLinks } from '../utils/pathLinks';
 
-interface RAGChatbotProps {
+export interface RAGChatbotProps {
   apiClient: PerkAPIClient;
   systemPrompt?: string;
   customInstructions?: string;

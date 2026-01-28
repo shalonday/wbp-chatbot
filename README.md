@@ -11,28 +11,12 @@ A plug-and-play RAG chatbot React component for the Web Brain Project, powered b
 - **Fully tested** with Vitest, React Testing Library, and MSW
 - **Styled with Material UI** using sensible defaults
 
-## Quick Start
+## Installation
 
-### Installation
-
-```bash
-npm install
-```
-
-### Environment Setup
-
-Copy `.env.example` to `.env.local`:
+Install the package into your React app:
 
 ```bash
-cp .env.example .env.local
-```
-
-Update with your Perk API base URL and Discord webhook (if needed).
-
-### Development
-
-```bash
-npm run dev
+npm install wbp-chatbot
 ```
 
 ### Testing
@@ -60,7 +44,8 @@ src/
 ├── mocks/            # Mock data and MSW server
 ├── types/            # TypeScript types
 ├── utils/            # Utilities (session ID, path links, etc.)
-└── test/             # Test configuration
+├── test/             # Test configuration
+└── index.ts          # Library entrypoint exports
 ```
 
 ## Usage
@@ -68,8 +53,7 @@ src/
 ### Basic Example
 
 ```tsx
-import { RAGChatbot } from './components/RAGChatbot';
-import { createPerkAPIClient } from './api/perkClient';
+import { RAGChatbot, createPerkAPIClient } from 'wbp-chatbot';
 
 function SearchPage() {
   const apiClient = createPerkAPIClient();
@@ -144,7 +128,7 @@ Pass custom instructions as a string. They will be appended to the default syste
 />
 ```
 
-## Testing
+## Development & Testing
 
 The project includes:
 

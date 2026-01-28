@@ -33,7 +33,8 @@ export class PerkAPIClient {
         query,
         limit,
       });
-      return response.data;
+      // Backend returns { results, query, timestamp }
+      return response.data.results;
     } catch (error) {
       console.error('Search error:', error);
       throw error;
