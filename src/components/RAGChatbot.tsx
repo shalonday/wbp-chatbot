@@ -46,7 +46,7 @@ export function RAGChatbot({
   apiClient,
   customInstructions = '',
   onMaterialRequestSubmit,
-  startNodeId = 'E', // Default to "E" (entry node)
+  startNodeId = '97838643-4e9b-434f-8985-89dd23408647', // Default to "E" (entry node)
   sx = {},
 }: RAGChatbotProps) {
   // State
